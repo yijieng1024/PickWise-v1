@@ -285,7 +285,7 @@ class _OrderSuccessPageState extends State<OrderSuccessPage> {
           const SizedBox(height: 20),
           
           // Items List
-          ...items.map((item) => _buildOrderItem(item)).toList(),
+          ...items.map((item) => _buildOrderItem(item)),
           
           const Divider(height: 30, thickness: 1),
           

@@ -620,7 +620,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> with SingleTickerPr
                       ),
                     ),
                     const SizedBox(height: 12),
-                    ...items.map((item) => _buildDetailItem(item)).toList(),
+                    ...items.map((item) => _buildDetailItem(item)),
 
                     const Divider(height: 32),
 

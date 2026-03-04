@@ -24,58 +24,81 @@ class _LoginPageState extends State<LoginPage> {
 
   final _formKey = GlobalKey<FormState>();
 
-  // ✅ Email/Password 登录
   Future<void> _loginUser() async {
-    if (!(_formKey.currentState?.validate() ?? false)) return;
+  if (!(_formKey.currentState?.validate() ?? false)) return;
 
-    setState(() => _isLoading = true);
+  setState(() => _isLoading = true);
 
+  try {
+    final response = await http.post(
+      Uri.parse("${ApiConstants.baseUrl}/api/auth/login"),
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      body: jsonEncode({
+        "email": _emailController.text.trim(),
+        "password": _passwordController.text.trim(),
+      }),
+    );
+
+    print("STATUS: ${response.statusCode}");
+    print("BODY: ${response.body}");
+
+    Map<String, dynamic> data = {};
+
+    // ✅ Safe JSON decoding
     try {
-      final response = await http.post(
-        Uri.parse("${ApiConstants.baseUrl}/api/auth/login"),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          "email": _emailController.text.trim(),
-          "password": _passwordController.text.trim(),
-        }),
-      );
-
-      final data = jsonDecode(response.body);
-
-      if (response.statusCode == 200) {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('jwt_token', data['token']);
-        await prefs.setString('username', data['user']['username']);
-        await prefs.setString('user_id', data['user']['id']);
-        await prefs.setString('user_avatar', data['user']['avatar'] ?? '');
-
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) => ShoppingPage(
-                    userName: data['user']['username'],
-                    userAvatar: data['user']['avatar'] ?? '',
-                    userId: data['user']['id'],
-                  )),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(data['message'] ?? 'Login failed')),
-        );
-      }
+      data = jsonDecode(response.body);
     } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Login error: $e")));
-    } finally {
-      setState(() => _isLoading = false);
+      throw Exception("Server returned invalid JSON");
     }
-  }
 
+    // ✅ Success case
+    if (response.statusCode == 200) {
+      final prefs = await SharedPreferences.getInstance();
+
+      await prefs.setString('jwt_token', data['token'] ?? '');
+      await prefs.setString('username', data['user']?['username'] ?? '');
+      await prefs.setString('user_id', data['user']?['id'] ?? '');
+      await prefs.setString('user_avatar', data['user']?['avatar'] ?? '');
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ShoppingPage(
+            userName: data['user']?['username'] ?? '',
+            userAvatar: data['user']?['avatar'] ?? '',
+            userId: data['user']?['id'] ?? '',
+          ),
+        ),
+      );
+    } else {
+      // ✅ Handle 400 / 401 properly
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(data['message'] ?? "Login failed"),
+        ),
+      );
+    }
+  } catch (e) {
+    print("LOGIN ERROR: $e");
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Login error: $e"),
+      ),
+    );
+  } finally {
+    setState(() => _isLoading = false);
+  }
+}
+/*
   Future<void> _signInWithGoogle() async {
   try {
     final googleSignIn = GoogleSignIn.instance;
     await googleSignIn.initialize(
-      serverClientId: 'your-server-client-id.googleusercontent.com',  // For backend idToken verification; get from Google Cloud Console
+      serverClientId: 'stay tune',  // For backend idToken verification; get from Google Cloud Console
     );
 
     // Authenticate and get user directly (returns GoogleSignInAccount on success; throws on fail/cancel)
@@ -150,6 +173,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
+*/
 
   Widget _buildTextFormField({
     required TextEditingController controller,

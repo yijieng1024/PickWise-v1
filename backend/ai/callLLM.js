@@ -18,7 +18,7 @@ if (!process.env.GOOGLE_API_KEY) throw new Error("Missing GOOGLE_API_KEY");
 
 // ------------------ MODEL ------------------
 const model = new ChatGoogleGenerativeAI({
-  model: "gemini-2.5-flash",
+  model: "gemini-3-flash-preview",
   temperature: 0.7,
   apiKey: process.env.GOOGLE_API_KEY,
 });
@@ -72,7 +72,7 @@ Data Provided: {laptops}
 **CRITICAL INSTRUCTION FOR LINKS:**
 1. If the user is just asking for recommendations, list the laptops with their details (Name, Price, Specs, Score). Do NOT provide purchase links yet.
 2. IF (and only if) the user explicitly expresses interest in a SPECIFIC laptop found in the data 
-(e.g., "I want to buy the Asus," "Show me the HP details," "Go with the first one"), you MUST append a navigation link for that specific laptop.
+(e.g., "I decided to buy....", "I want to buy the Asus," "Show me the HP details," "Go with the first one"), you MUST append a navigation link for that specific laptop.
 3. The link format is: **[View Details: Product Name](app://laptop/ID)**
 4. Use the 'id' field from the laptop data to fill the ID section.
 

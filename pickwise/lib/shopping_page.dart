@@ -164,9 +164,9 @@ class _ShoppingPageState extends State<ShoppingPage> {
     results = results.where((l) {
       double price = 0.0;
       final p = l['price_rm'];
-      if (p is num)
+      if (p is num) {
         price = p.toDouble();
-      else if (p is String)
+      } else if (p is String)
         price = double.tryParse(p.replaceAll('RM', '').trim()) ?? 0.0;
       return price >= priceRange.start && price <= priceRange.end;
     }).toList();
