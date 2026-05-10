@@ -1,4 +1,4 @@
-# PickWise
+# PickWise v1
 
 PickWise is a **smart product recommendation app** focused on helping users choose the best **laptops** based on their needs, preferences, and budget. By combining product data with AI-powered recommendation logic, PickWise simplifies the decision-making process for users who feel overwhelmed by too many choices.
 
