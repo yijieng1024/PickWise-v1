@@ -20,6 +20,6 @@ PickWise is a **smart product recommendation app** focused on helping users choo
 * **Backend:** Node.js
 * **Database:** MongoDB
 * **AI/LLM Integration:** LangChain
-* **Authentication:** Firebase Authentication
+* **Authentication:** JWT Bearer Token
 
 ---
