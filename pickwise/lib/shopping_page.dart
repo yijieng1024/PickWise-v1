@@ -242,7 +242,11 @@ class _ShoppingPageState extends State<ShoppingPage> {
     try {
       final response = await http.get(
         Uri.parse('${ApiConstants.baseUrl}/api/laptops'),
-        headers: {'Authorization': 'Bearer $token'},
+        headers: {
+          'Authorization': 'Bearer $token',
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
+        },
       );
 
       if (response.statusCode == 200) {

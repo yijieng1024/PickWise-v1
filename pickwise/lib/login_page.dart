@@ -366,36 +366,36 @@ class _LoginPageState extends State<LoginPage> {
                               ],
                             ),
                             const SizedBox(height: 16),
-                            SizedBox(
-                              width: double.infinity,
-                              height: 56,
-                              child: ElevatedButton(
-                                onPressed: _isLoading ? null : _signInWithGoogle,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white.withOpacity(0.9),
-                                  foregroundColor: const Color(0xFF37474F),
-                                  side: BorderSide(color: Colors.white.withOpacity(0.5)),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: Image.asset('assets/images/google_icon.png'),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    const Text(
-                                      'Continue with Google',
-                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
+                            // SizedBox(
+                            //   width: double.infinity,
+                            //   height: 56,
+                            //   child: ElevatedButton(
+                            //     onPressed: _isLoading ? null : // _signInWithGoogle,
+                            //     style: ElevatedButton.styleFrom(
+                            //       backgroundColor: Colors.white.withOpacity(0.9),
+                            //       foregroundColor: const Color(0xFF37474F),
+                            //       side: BorderSide(color: Colors.white.withOpacity(0.5)),
+                            //       shape: RoundedRectangleBorder(
+                            //         borderRadius: BorderRadius.circular(12),
+                            //       ),
+                            //     ),
+                            //     child: Row(
+                            //       mainAxisAlignment: MainAxisAlignment.center,
+                            //       children: [
+                            //         SizedBox(
+                            //           width: 20,
+                            //           height: 20,
+                            //           child: Image.asset('assets/images/google_icon.png'),
+                            //         ),
+                            //         const SizedBox(width: 12),
+                            //         const Text(
+                            //           'Continue with Google',
+                            //           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                            //         ),
+                            //       ],
+                            //     ),
+                            //   ),
+                            // ),
                             const SizedBox(height: 24),
                             TextButton(
                               onPressed: () {

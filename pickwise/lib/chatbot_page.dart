@@ -58,9 +58,14 @@ String sanitizeUtf16(String input) {
 
 class SafeMarkdown extends StatelessWidget {
   final String data;
-  final void Function(String text, String? href, String title)? onTapLink; // new
+  final void Function(String text, String? href, String title)?
+  onTapLink; // new
 
-  const SafeMarkdown({super.key, required this.data, this.onTapLink}); // updated
+  const SafeMarkdown({
+    super.key,
+    required this.data,
+    this.onTapLink,
+  }); // updated
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +76,11 @@ class SafeMarkdown extends StatelessWidget {
       styleSheet: MarkdownStyleSheet(
         p: const TextStyle(color: Color(0xFF37474F), fontSize: 16, height: 1.4),
         strong: const TextStyle(fontWeight: FontWeight.bold),
-        code: const TextStyle(fontFamily: 'monospace', backgroundColor: Color(0xFFE0E0E0), fontSize: 14),
+        code: const TextStyle(
+          fontFamily: 'monospace',
+          backgroundColor: Color(0xFFE0E0E0),
+          fontSize: 14,
+        ),
         blockquotePadding: const EdgeInsets.only(left: 12),
         blockquoteDecoration: const BoxDecoration(
           border: Border(left: BorderSide(color: Color(0xFF4DD0E1), width: 3)),
@@ -120,7 +129,8 @@ class _ChatbotPageState extends State<ChatbotPage> {
   final double _bottomThreshold = 100.0;
   late VoidCallback _scrollListener;
 
-  final TextEditingController _sidebarSearchController = TextEditingController();
+  final TextEditingController _sidebarSearchController =
+      TextEditingController();
 
   // Sidebar conversation list
   List<Map<String, dynamic>> _conversationList = [];
@@ -191,7 +201,10 @@ class _ChatbotPageState extends State<ChatbotPage> {
   void _copyMessage(String text) {
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Message copied!'), duration: Duration(seconds: 1)),
+      const SnackBar(
+        content: Text('Message copied!'),
+        duration: Duration(seconds: 1),
+      ),
     );
   }
 
@@ -214,7 +227,9 @@ class _ChatbotPageState extends State<ChatbotPage> {
                 Navigator.pop(context);
                 final updatedUser = await Navigator.push<Map<String, dynamic>>(
                   context,
-                  MaterialPageRoute(builder: (context) => const ProfileSettingsPage()),
+                  MaterialPageRoute(
+                    builder: (context) => const ProfileSettingsPage(),
+                  ),
                 );
 
                 if (updatedUser != null && mounted) {
@@ -239,7 +254,9 @@ class _ChatbotPageState extends State<ChatbotPage> {
                 Navigator.pop(context);
                 final prefs = await SharedPreferences.getInstance();
                 await prefs.remove("jwt_token");
-                Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+                Navigator.of(
+                  context,
+                ).pushNamedAndRemoveUntil('/login', (route) => false);
               },
             ),
           ],
@@ -269,6 +286,8 @@ class _ChatbotPageState extends State<ChatbotPage> {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
         },
         body: jsonEncode({
           'userId': userId,
@@ -336,6 +355,8 @@ class _ChatbotPageState extends State<ChatbotPage> {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
         },
         body: jsonEncode({
           'userId': widget.userId,
@@ -390,7 +411,9 @@ class _ChatbotPageState extends State<ChatbotPage> {
       });
       debugPrint('Error in _sendMessage: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to send message. Please try again.')),
+        const SnackBar(
+          content: Text('Failed to send message. Please try again.'),
+        ),
       );
     }
   }
@@ -429,13 +452,15 @@ class _ChatbotPageState extends State<ChatbotPage> {
     try {
       final response = await http.post(
         Uri.parse('${ApiConstants.baseUrl}/api/conversation/create'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
+        },
         body: jsonEncode({
           'userId': widget.userId,
-          'message': {
-            'sender': 'assistant',
-            'text': 'Conversation started',
-          },
+          'message': {'sender': 'assistant', 'text': 'Conversation started'},
         }),
       );
 
@@ -529,7 +554,10 @@ class _ChatbotPageState extends State<ChatbotPage> {
           autofocus: true,
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(context, controller.text.trim()),
             child: const Text('Save'),
@@ -538,11 +566,16 @@ class _ChatbotPageState extends State<ChatbotPage> {
       ),
     );
 
-    if (newTitle == null || newTitle.isEmpty || newTitle == currentTitle) return;
+    if (newTitle == null || newTitle.isEmpty || newTitle == currentTitle)
+      return;
 
     try {
-      final token = await SharedPreferences.getInstance().then((p) => p.getString('jwt_token'));
-      final uri = Uri.parse('${ApiConstants.baseUrl}/api/conversation/$convId/rename');
+      final token = await SharedPreferences.getInstance().then(
+        (p) => p.getString('jwt_token'),
+      );
+      final uri = Uri.parse(
+        '${ApiConstants.baseUrl}/api/conversation/$convId/rename',
+      );
 
       final resp = await http.put(
         uri,
@@ -555,17 +588,17 @@ class _ChatbotPageState extends State<ChatbotPage> {
 
       if (resp.statusCode == 200) {
         await _loadConversationList();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Renamed to "$newTitle"')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Renamed to "$newTitle"')));
       } else {
         throw Exception(resp.body);
       }
     } catch (e) {
       debugPrint('Rename error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to rename')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Failed to rename')));
     }
   }
 
@@ -589,7 +622,9 @@ class _ChatbotPageState extends State<ChatbotPage> {
           icon: const Icon(Icons.more_vert, size: 18, color: Colors.black54),
           onSelected: (value) async {
             if (value == 'delete') {
-              final token = await SharedPreferences.getInstance().then((p) => p.getString('jwt_token'));
+              final token = await SharedPreferences.getInstance().then(
+                (p) => p.getString('jwt_token'),
+              );
               await http.delete(
                 Uri.parse('${ApiConstants.baseUrl}/api/conversation/$convId'),
                 headers: {'Authorization': 'Bearer $token'},
@@ -634,7 +669,10 @@ class _ChatbotPageState extends State<ChatbotPage> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFB2DFDB),
                   borderRadius: BorderRadius.circular(40),
@@ -651,7 +689,11 @@ class _ChatbotPageState extends State<ChatbotPage> {
                   children: [
                     IconButton(
                       onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-                      icon: const Icon(Icons.menu, color: Color(0xFF37474F), size: 24),
+                      icon: const Icon(
+                        Icons.menu,
+                        color: Color(0xFF37474F),
+                        size: 24,
+                      ),
                     ),
                     Row(
                       children: [
@@ -664,7 +706,11 @@ class _ChatbotPageState extends State<ChatbotPage> {
                         const SizedBox(width: 8),
                         const Text(
                           'Pickwise',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFF37474F)),
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF37474F),
+                          ),
                         ),
                       ],
                     ),
@@ -675,16 +721,28 @@ class _ChatbotPageState extends State<ChatbotPage> {
                           onPressed: () async {
                             final prefs = await SharedPreferences.getInstance();
                             await prefs.remove("jwt_token");
-                            Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                              '/login',
+                              (route) => false,
+                            );
                           },
                           icon: (_userAvatar != null && _userAvatar!.isNotEmpty)
-                              ? CircleAvatar(backgroundImage: NetworkImage(_userAvatar!), radius: 20)
+                              ? CircleAvatar(
+                                  backgroundImage: NetworkImage(_userAvatar!),
+                                  radius: 20,
+                                )
                               : CircleAvatar(
                                   radius: 20,
                                   backgroundColor: const Color(0xFF707274),
                                   child: Text(
-                                    _userName.isNotEmpty ? _userName[0].toUpperCase() : "?",
-                                    style: const TextStyle(fontSize: 14, color: Colors.white, fontWeight: FontWeight.bold),
+                                    _userName.isNotEmpty
+                                        ? _userName[0].toUpperCase()
+                                        : "?",
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                         ),
@@ -702,7 +760,10 @@ class _ChatbotPageState extends State<ChatbotPage> {
                   RepaintBoundary(
                     key: _chatBoundaryKey,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
                       child: _conversationStarted
                           ? ListView.builder(
                               controller: _scrollController,
@@ -713,27 +774,45 @@ class _ChatbotPageState extends State<ChatbotPage> {
                                 final isUser = msg['sender'] == 'user';
 
                                 return Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 6),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 6,
+                                  ),
                                   child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: isUser
+                                        ? MainAxisAlignment.end
+                                        : MainAxisAlignment.start,
                                     children: [
                                       Flexible(
                                         child: Stack(
                                           children: [
                                             Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 14,
+                                                    vertical: 10,
+                                                  ),
                                               decoration: BoxDecoration(
-                                                color: isUser ? const Color(0xFF4DD0E1) : const Color(0xFFF5F5F5),
+                                                color: isUser
+                                                    ? const Color(0xFF4DD0E1)
+                                                    : const Color(0xFFF5F5F5),
                                                 borderRadius: BorderRadius.only(
-                                                  topLeft: const Radius.circular(16),
-                                                  topRight: const Radius.circular(16),
-                                                  bottomLeft: Radius.circular(isUser ? 16 : 4),
-                                                  bottomRight: Radius.circular(isUser ? 4 : 16),
+                                                  topLeft:
+                                                      const Radius.circular(16),
+                                                  topRight:
+                                                      const Radius.circular(16),
+                                                  bottomLeft: Radius.circular(
+                                                    isUser ? 16 : 4,
+                                                  ),
+                                                  bottomRight: Radius.circular(
+                                                    isUser ? 4 : 16,
+                                                  ),
                                                 ),
                                                 boxShadow: [
                                                   BoxShadow(
-                                                    color: Colors.black.withOpacity(0.05),
+                                                    color: Colors.black
+                                                        .withOpacity(0.05),
                                                     blurRadius: 4,
                                                     offset: const Offset(0, 2),
                                                   ),
@@ -742,29 +821,54 @@ class _ChatbotPageState extends State<ChatbotPage> {
                                               child: isUser
                                                   ? Text(
                                                       msg['text'] ?? '',
-                                                      style: const TextStyle(color: Colors.white, fontSize: 16),
+                                                      style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 16,
+                                                      ),
                                                     )
                                                   : (msg['isLoading'] ?? false)
-                                                      ? const LoadingDotsWidget()
-                                                      : BotMessageWidget(
-                                                          fullText: msg['fullText'] ?? msg['text'] ?? '',
-                                                          displayText: msg['displayText'] ?? msg['fullText'] ?? msg['text'] ?? '',
-                                                          isTyping: msg['isTyping'] ?? false,
-                                                        ),
+                                                  ? const LoadingDotsWidget()
+                                                  : BotMessageWidget(
+                                                      fullText:
+                                                          msg['fullText'] ??
+                                                          msg['text'] ??
+                                                          '',
+                                                      displayText:
+                                                          msg['displayText'] ??
+                                                          msg['fullText'] ??
+                                                          msg['text'] ??
+                                                          '',
+                                                      isTyping:
+                                                          msg['isTyping'] ??
+                                                          false,
+                                                    ),
                                             ),
-                                            if (!(msg['isTyping'] ?? false) && !(msg['isLoading'] ?? false))
+                                            if (!(msg['isTyping'] ?? false) &&
+                                                !(msg['isLoading'] ?? false))
                                               Positioned(
                                                 top: 4,
                                                 right: 4,
                                                 child: GestureDetector(
-                                                  onTap: () => _copyMessage(isUser ? (msg['text'] ?? '') : (msg['fullText'] ?? msg['text'] ?? '')),
+                                                  onTap: () => _copyMessage(
+                                                    isUser
+                                                        ? (msg['text'] ?? '')
+                                                        : (msg['fullText'] ??
+                                                              msg['text'] ??
+                                                              ''),
+                                                  ),
                                                   child: Container(
-                                                    padding: const EdgeInsets.all(4),
+                                                    padding:
+                                                        const EdgeInsets.all(4),
                                                     decoration: BoxDecoration(
-                                                      color: Colors.white.withOpacity(0.8),
+                                                      color: Colors.white
+                                                          .withOpacity(0.8),
                                                       shape: BoxShape.circle,
                                                     ),
-                                                    child: const Icon(Icons.copy, size: 16, color: Colors.grey),
+                                                    child: const Icon(
+                                                      Icons.copy,
+                                                      size: 16,
+                                                      color: Colors.grey,
+                                                    ),
                                                   ),
                                                 ),
                                               ),
@@ -794,7 +898,11 @@ class _ChatbotPageState extends State<ChatbotPage> {
                           onPressed: () {
                             _scrollToBottom(force: true);
                           },
-                          child: const Icon(Icons.arrow_downward, color: Colors.white, size: 20),
+                          child: const Icon(
+                            Icons.arrow_downward,
+                            color: Colors.white,
+                            size: 20,
+                          ),
                         ),
                       ),
                     ),
@@ -830,14 +938,20 @@ class _ChatbotPageState extends State<ChatbotPage> {
                         ),
                         child: TextField(
                           controller: _messageController,
-                          textInputAction: TextInputAction.send, // new: enable Enter key
+                          textInputAction:
+                              TextInputAction.send, // new: enable Enter key
                           decoration: const InputDecoration(
                             hintText: 'Ask for Recommendation',
-                            hintStyle: TextStyle(color: Color(0xFF9E9E9E), fontSize: 16),
+                            hintStyle: TextStyle(
+                              color: Color(0xFF9E9E9E),
+                              fontSize: 16,
+                            ),
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.symmetric(vertical: 12),
                           ),
-                          onSubmitted: (_) => _sendMessage(_messageController.text), // existing: already wired
+                          onSubmitted: (_) => _sendMessage(
+                            _messageController.text,
+                          ), // existing: already wired
                         ),
                       ),
                     ),
@@ -858,7 +972,11 @@ class _ChatbotPageState extends State<ChatbotPage> {
                       ),
                       child: IconButton(
                         onPressed: () => _sendMessage(_messageController.text),
-                        icon: const Icon(Icons.send, color: Colors.white, size: 20),
+                        icon: const Icon(
+                          Icons.send,
+                          color: Colors.white,
+                          size: 20,
+                        ),
                       ),
                     ),
                   ],
@@ -894,9 +1012,24 @@ class WelcomeMessage extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('Hi, $userName!', style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w600, color: Color(0xFF37474F))),
+          Text(
+            'Hi, $userName!',
+            style: const TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF37474F),
+            ),
+          ),
           const SizedBox(height: 8),
-          const Text('What can I help you?', style: TextStyle(fontSize: 18, color: Color(0xFF37474F), height: 1.4), textAlign: TextAlign.center),
+          const Text(
+            'What can I help you?',
+            style: TextStyle(
+              fontSize: 18,
+              color: Color(0xFF37474F),
+              height: 1.4,
+            ),
+            textAlign: TextAlign.center,
+          ),
         ],
       ),
     );
@@ -908,7 +1041,12 @@ class BotMessageWidget extends StatelessWidget {
   final String displayText;
   final bool isTyping;
 
-  const BotMessageWidget({super.key, required this.fullText, required this.displayText, required this.isTyping});
+  const BotMessageWidget({
+    super.key,
+    required this.fullText,
+    required this.displayText,
+    required this.isTyping,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -923,7 +1061,9 @@ class BotMessageWidget extends StatelessWidget {
             try {
               final uri = Uri.parse(href);
               if (uri.scheme == 'app' && uri.host == 'laptop') {
-                id = uri.pathSegments.isNotEmpty ? uri.pathSegments.first : null;
+                id = uri.pathSegments.isNotEmpty
+                    ? uri.pathSegments.first
+                    : null;
               } else {
                 // fallback: use last path segment
                 if (uri.pathSegments.isNotEmpty) id = uri.pathSegments.last;
@@ -950,9 +1090,19 @@ class BotMessageWidget extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation(Color(0xFF4DD0E1)))),
+                SizedBox(
+                  width: 14,
+                  height: 14,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation(Color(0xFF4DD0E1)),
+                  ),
+                ),
                 SizedBox(width: 6),
-                Text('Typing...', style: TextStyle(color: Color(0xFF9E9E9E), fontSize: 13)),
+                Text(
+                  'Typing...',
+                  style: TextStyle(color: Color(0xFF9E9E9E), fontSize: 13),
+                ),
               ],
             ),
           ),
@@ -1028,7 +1178,9 @@ class SidebarDrawer extends StatelessWidget {
   });
 
   List<Map<String, dynamic>> _filterConversations(
-      List<Map<String, dynamic>> list, String query) {
+    List<Map<String, dynamic>> list,
+    String query,
+  ) {
     if (query.isEmpty) return list;
     final q = query.toLowerCase();
     return list.where((conv) {
@@ -1053,26 +1205,42 @@ class SidebarDrawer extends StatelessWidget {
                   Expanded(
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24)),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(24),
+                      ),
                       child: ValueListenableBuilder<TextEditingValue>(
                         valueListenable: searchController,
                         builder: (context, value, child) {
                           return Row(
                             children: [
-                              const Icon(Icons.search, color: Color(0xFF9E9E9E), size: 20),
+                              const Icon(
+                                Icons.search,
+                                color: Color(0xFF9E9E9E),
+                                size: 20,
+                              ),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: TextField(
                                   controller: searchController,
                                   decoration: InputDecoration(
                                     hintText: 'Search',
-                                    hintStyle: const TextStyle(color: Color(0xFF9E9E9E), fontSize: 14),
+                                    hintStyle: const TextStyle(
+                                      color: Color(0xFF9E9E9E),
+                                      fontSize: 14,
+                                    ),
                                     border: InputBorder.none,
-                                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      vertical: 12,
+                                    ),
                                     suffixIcon: value.text.isNotEmpty
                                         ? IconButton(
-                                            icon: const Icon(Icons.clear, size: 16),
-                                            onPressed: () => searchController.clear(),
+                                            icon: const Icon(
+                                              Icons.clear,
+                                              size: 16,
+                                            ),
+                                            onPressed: () =>
+                                                searchController.clear(),
                                           )
                                         : null,
                                   ),
@@ -1089,7 +1257,10 @@ class SidebarDrawer extends StatelessWidget {
                   Container(
                     width: 48,
                     height: 48,
-                    decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
                     child: IconButton(
                       onPressed: () {
                         Navigator.pop(context);
@@ -1105,27 +1276,36 @@ class SidebarDrawer extends StatelessWidget {
             // BACK TO HOME
             ElevatedButton(
               onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                builder: (context) => ShoppingPage(userId: userId, userName: userName, userAvatar: userAvatar),
-                ),
-              );
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ShoppingPage(
+                      userId: userId,
+                      userName: userName,
+                      userAvatar: userAvatar,
+                    ),
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(
-              minimumSize: const Size(280, 48),
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.black,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                minimumSize: const Size(280, 48),
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
               ),
               child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.home, size: 20),
-                SizedBox(width: 8),
-                Text('Back To Home'),
-              ],
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.home, size: 20),
+                  SizedBox(width: 8),
+                  Text('Back To Home'),
+                ],
               ),
             ),
             const SizedBox(height: 10),
@@ -1135,9 +1315,20 @@ class SidebarDrawer extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
                 children: [
-                  Icon(Icons.chat_bubble_outline, color: Colors.black87, size: 20),
+                  Icon(
+                    Icons.chat_bubble_outline,
+                    color: Colors.black87,
+                    size: 20,
+                  ),
                   SizedBox(width: 8),
-                  Text('Chat', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black87)),
+                  Text(
+                    'Chat',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -1148,28 +1339,34 @@ class SidebarDrawer extends StatelessWidget {
               child: ValueListenableBuilder<TextEditingValue>(
                 valueListenable: searchController,
                 builder: (context, value, child) {
-                  final filtered = _filterConversations(conversationList, value.text);
+                  final filtered = _filterConversations(
+                    conversationList,
+                    value.text,
+                  );
                   return isLoadingList
                       ? const Center(child: CircularProgressIndicator())
                       : filtered.isEmpty
-                          ? const Center(
-                              child: Text(
-                                'No conversations found',
-                                style: TextStyle(color: Colors.black54, fontSize: 16),
-                              ),
-                            )
-                          : ListView.builder(
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              itemCount: filtered.length,
-                              itemBuilder: (context, i) {
-                                final conv = filtered[i];
-                                return buildChatItem!(
-                                  context,
-                                  conv['title'] ?? 'Untitled',
-                                  conv['_id'].toString(),
-                                );
-                              },
+                      ? const Center(
+                          child: Text(
+                            'No conversations found',
+                            style: TextStyle(
+                              color: Colors.black54,
+                              fontSize: 16,
+                            ),
+                          ),
+                        )
+                      : ListView.builder(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          itemCount: filtered.length,
+                          itemBuilder: (context, i) {
+                            final conv = filtered[i];
+                            return buildChatItem!(
+                              context,
+                              conv['title'] ?? 'Untitled',
+                              conv['_id'].toString(),
                             );
+                          },
+                        );
                 },
               ),
             ),
@@ -1177,7 +1374,9 @@ class SidebarDrawer extends StatelessWidget {
             // USER FOOTER
             Container(
               padding: const EdgeInsets.all(16),
-              decoration: const BoxDecoration(border: Border(top: BorderSide(color: Color(0xFFD0CCC7)))),
+              decoration: const BoxDecoration(
+                border: Border(top: BorderSide(color: Color(0xFFD0CCC7))),
+              ),
               child: Row(
                 children: [
                   CircleAvatar(
@@ -1185,20 +1384,32 @@ class SidebarDrawer extends StatelessWidget {
                     backgroundColor: const Color(0xFF4A5568),
                     child: Text(
                       userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       userName,
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black87),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   IconButton(
                     onPressed: () => onShowSettings?.call(context),
-                    icon: const Icon(Icons.settings_outlined, color: Colors.black87, size: 24),
+                    icon: const Icon(
+                      Icons.settings_outlined,
+                      color: Colors.black87,
+                      size: 24,
+                    ),
                   ),
                 ],
               ),
