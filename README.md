@@ -23,26 +23,3 @@ PickWise is a **smart product recommendation app** focused on helping users choo
 * **Authentication:** Firebase Authentication
 
 ---
-
-## 📂 Project Structure
-
-```
-PickWise/
-│── android/         # Android-specific config
-│── ios/             # iOS-specific config
-│── lib/             # Flutter source code
-│   ├── screens/     # UI Screens
-│   ├── widgets/     # Reusable components
-│   ├── services/    # Firebase & API services
-│   └── main.dart    # App entry point
-│── backend/         # Node.js backend (APIs)
-│── database/        # MongoDB schema & seed data
-│── assets/          # Images, icons, etc.
-│── README.md        # Project documentation
-```
-
----
-
-## 🔧 Setup Instructions
-
-Stay Tuned
